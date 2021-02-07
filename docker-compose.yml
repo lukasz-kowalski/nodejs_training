@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  books-api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.debug
+    container_name: books-api
+    environment:
+      PORT: 3001
+    command: node_modules/.bin/ts-node-dev --debug --respawn --inspect=0.0.0.0:9229 src/app.ts
+    ports:
+      - 3001:3001
+      - 9229:9229
+    volumes:
+      - ./src:/app/src

@@ -1,0 +1,8 @@
+FROM node:14
+
+WORKDIR /app
+
+COPY ./tsconfig.json ./tsconfig.json
+COPY ./package*.json ./
+
+RUN npm install
