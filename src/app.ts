@@ -4,8 +4,6 @@ const app: express.Application = express()
 
 app.use(express.json())
 
-const port = 3000
-
 type Book = {
   id: number
   authors: string[]
@@ -78,6 +76,6 @@ app.delete('/books/:id', (req, res) => {
   res.sendStatus(202)
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+app.listen(process.env.PORT, () => {
+  console.log(`Example app listening at http://localhost:${process.env.PORT}`)
 })
