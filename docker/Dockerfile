@@ -1,4 +1,4 @@
-#BUILDER STAGE
+#BUILD STAGE
 FROM node:fermium-alpine3.12 AS builder
 
 WORKDIR /tmp

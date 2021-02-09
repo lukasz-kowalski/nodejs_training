@@ -1,11 +1,11 @@
-import { Book } from '../types/Book'
-import { BooksRepository } from '../types/BooksRepository'
+import type { Book } from '../types/Book'
+import type { BooksRepository } from '../types/BooksRepository'
 
-export const createInMemoryBookRepository = (): BooksRepository => {
+export const createInMemoryBooksRepository = (): BooksRepository => {
   let books: Book[] = [
     {
       id: 1,
-      authors: ['Jonathan Haidt'],
+      authors: 'Jonathan Haidt',
       title: 'Coddling of the American Mind',
     },
     {
@@ -13,39 +13,52 @@ export const createInMemoryBookRepository = (): BooksRepository => {
       authors: ['Dan Heath', 'Chip Heath'],
       title: 'Switch: How to change when change is hard',
     },
-    { id: 3, authors: ['Kathy Sierra'], title: 'Badass: Making users awesome' },
+    { id: 3, authors: 'Kathy Sierra', title: 'Badass: Making users awesome' },
     {
       id: 4,
-      authors: ['Daniel Kahneman'],
+      authors: 'Daniel Kahneman',
       title: 'Thinking fast, thinking slow',
     },
-    { id: 5, authors: ['Caroline Dweck'], title: 'Mindset' },
-    { id: 6, authors: ['Michael Walker'], title: 'Why we sleep?' },
+    { id: 5, authors: 'Caroline Dweck', title: 'Mindset' },
+    { id: 6, authors: 'Michael Walker', title: 'Why we sleep?' },
   ]
 
   return {
+    getTotal() {
+      return Promise.resolve(books.length)
+    },
+    getByPageAndLimit(page: number, limit: number) {
+      const offset = (page - 1) * limit
+
+      return Promise.resolve(books.slice(offset, limit))
+    },
     getAll() {
       return Promise.resolve(books)
     },
     add(data: Book) {
       books = books.concat(data)
-
-      return Promise.resolve(true)
     },
     getById(id: number) {
-      const book = books.filter((book) => book.id === id).pop()
-
-      return Promise.resolve(book)
+      return Promise.resolve(books.filter((book) => book.id === id).pop())
     },
     updateById(id: number, data: Book) {
-      books = books.map((book) => (book.id === id ? data : book))
+      let result = false
 
-      return Promise.resolve(true)
+      const markUpdated = (book: Book) => {
+        result = true
+        return book
+      }
+
+      books = books.map((book) => (book.id === id ? markUpdated(data) : book))
+
+      return Promise.resolve(result)
     },
     deleteById(id: number) {
+      const count = books.length
+
       books = books.filter((book) => book.id !== id)
 
-      return Promise.resolve(true)
+      return Promise.resolve(books.length !== count)
     },
   }
 }
