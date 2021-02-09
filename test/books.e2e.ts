@@ -118,4 +118,11 @@ describe('Books', () => {
     // we expect the test original book set again
     assert.deepStrictEqual(getBooksRequest.body, books)
   })
+
+  it('handles fetching non-existing book', async () => {
+    await request
+      .get(`/books/99999`)
+      .set('Accept', 'application/json')
+      .expect(HTTP.NOT_FOUND)
+  })
 })

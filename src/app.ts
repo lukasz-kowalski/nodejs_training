@@ -1,7 +1,11 @@
+require('dotenv').config()
+import 'express-async-errors'
 import express, { Request, Response } from 'express'
 import { BooksRepository } from './types/BooksRepository'
 import { Book } from './types/Book'
 import { HTTP } from './consts'
+import { notFoundHandler, serverErrorHandler } from './error'
+import { BookNotFoundException } from './exceptions/BookNotFound'
 
 export const createApp = (
   booksRepository: BooksRepository
@@ -9,6 +13,10 @@ export const createApp = (
   const app: express.Application = express()
 
   app.use(express.json())
+
+  app.get('/', (req, res) => {
+    res.send('Go to /books endpoint')
+  })
 
   app.get('/books', async (req: Request, res: Response) => {
     const books = await booksRepository.getAll()
@@ -27,6 +35,10 @@ export const createApp = (
     const id = Number(req.params.id)
 
     const book = await booksRepository.getById(id)
+
+    if (!book) {
+      throw new BookNotFoundException(id)
+    }
 
     res.status(HTTP.OK).json(book)
   })
@@ -47,6 +59,9 @@ export const createApp = (
 
     res.sendStatus(HTTP.ACCEPTED)
   })
+
+  app.use(notFoundHandler)
+  app.use(serverErrorHandler)
 
   return app
 }
